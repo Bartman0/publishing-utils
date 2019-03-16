@@ -52,6 +52,9 @@ def main():
             if len(tds.connections) > 1:
                 error = "only single connection data sources are supported at this time"
                 raise ValueError(error)
+            if tds.has_extract() and (os.path.splitext(os.path.basename(ds))[1] != '.tdsx'):
+                error = "datasource {0} has an extract defined, but has not been saved as a .tdsx file".format(ds)
+                raise ValueError(error)
             tds.connections[0].dbname = args.database
             tds.connections[0].server = args.host
             tds.connections[0].port = args.port
