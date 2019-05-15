@@ -14,12 +14,12 @@ def main():
     parser.add_argument('--database', '-D', required=True, help='database name')
     parser.add_argument('--login', '-L', required=True, help='login to sign into database')
     parser.add_argument('-P', required=True, help='password to sign into database')
-    parser.add_argument('--server', '-s', help='server to publish to')
+    parser.add_argument('--server', '-s', required=True, help='server to publish to')
     parser.add_argument('--site', '-S', default=None)
     parser.add_argument('--project', default=None)
-    parser.add_argument('--username', '-u', help='username to sign into server')
-    parser.add_argument('-p', '--password', default=None)
-    parser.add_argument('--directory', '-d', default='migrated')
+    parser.add_argument('--username', '-u', required=True, help='username to sign into server')
+    parser.add_argument('-p', '--password', required=True, default=None)
+    parser.add_argument('--directory', '-d', required=True, default='migrated')
 
     parser.add_argument('--logging-level', '-l', choices=['debug', 'info', 'error'], default='error',
                         help='desired logging level (set to error by default)')
@@ -73,7 +73,7 @@ def main():
             except TSC.server.endpoint.exceptions.ServerResponseError:
                 server.version = '2.4'
                 new_ds = server.datasources.publish(new_ds, new_ds_name, mode = overwrite_true, connection_credentials=creds)
-            print("data source published ID: {0}".format(new_ds.id))
+            print("data source {0} published ID: {1}".format(new_ds.name, new_ds.id))
 
 
 if __name__ == '__main__':
