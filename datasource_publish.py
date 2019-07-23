@@ -1,6 +1,7 @@
 import os
 import argparse
 import logging
+import re
 
 import tableauserverclient as TSC
 from tableauserverclient import ConnectionCredentials
@@ -21,7 +22,7 @@ def main():
     parser.add_argument('-p', '--password', required=True, default=None)
     parser.add_argument('--directory', '-d', required=True, default='migrated')
 
-    parser.add_argument('--logging-level', '-l', choices=['debug', 'info', 'error'], default='error',
+    parser.add_argument('--logging-level', '-l', choices=['debug', 'info', 'error'], default='warning',
                         help='desired logging level (set to error by default)')
 
     parser.add_argument('datasource', help='one or more datasources to publish', nargs='+')
@@ -55,6 +56,10 @@ def main():
             if tds.has_extract() and (os.path.splitext(os.path.basename(ds))[1] != '.tdsx'):
                 error = "datasource {0} has an extract defined, but has not been saved as a .tdsx file".format(ds)
                 raise ValueError(error)
+            extract_flag = [ p for p in tds.parameters if re.search('empty.*extract', p.caption, re.IGNORECASE) ]
+            if len(extract_flag) > 0 and extract_flag[0].value == 'true':
+                warning = "datasource {0} has an empty extract parameter which is set to true".format(ds)
+                logging.warning(warning)
             tds.connections[0].dbname = args.database
             tds.connections[0].server = args.host
             tds.connections[0].port = args.port
